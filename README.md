@@ -1,30 +1,76 @@
 # role_name
 
-A brief description of the role goes here.
+Configuration of sysctl system configuration.
+Uses and changes the sysctl.conf file.
 
 ## Requirements
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+- Ansile >= 2.4
 
 ## Role Variables
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+A list of all the default variables for this role is available in `defaults/main.yml` and `vars/main.yml`.
 
 ## Dependencies
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+None.
 
 ## Example Playbook
 
 Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+  - name: test sysctl role
+    hosts: all
+    roles:
+      - role: amtega.sysctl
+        vars:
+          sysctl_options_list:
+        #  [service]:
+        #    option_name:
+        #    option_value:
+        #    option_status: [present | absent]
+            rp_filter:
+              option_name: net.ipv4.conf.all.rp_filter
+              option_value: 1
+              option_status: "absent"
+
+            accept_source_route:
+              option_name: "net.ipv4.conf.all.accept_source_route"
+              option_value: 0
+              option_status: "absent"
+
+            all_accept_redirects:
+              option_name: net.ipv4.conf.all.accept_redirects
+              option_value: 0ansible-playbook --skip-tags "role::docker_engine" main.yml
+              option_status: "present"
+
+            default_accept_redirects:
+              option_name: net.ipv4.conf.default.accept_redirects
+              option_value: 0
+              option_status: "present"
+
 
 ## Testing
 
-A description of how to run tests of the role if available.
+Test are based on docker containers. You can run the tests with the following commands:
+
+```shell
+$ cd amtega.sysctl/tests
+$ ansible-playbook main.yml
+```
+
+If you have docker engine configured you can avoid running dependant 'docker_engine' role (that usually requries root privileges) with the following commands:
+
+```shell
+$ cd amtega.sysctl/tests
+$ ansible-playbook --skip-tags "role::docker_engine" main.yml
+
+If you dont use docker containers:
+
+```shell
+$ cd amtega.sysctl/tests
+$ ansible-playbook -u [ssh_user] -kK main-hosts.yml
+
 
 ## License
 
@@ -44,5 +90,4 @@ GNU General Public License for more details or European Union Public License for
 
 ## Author Information
 
-- author_name 1.
-- author_name N.
+- author_name Carlos Chedas Fernandez

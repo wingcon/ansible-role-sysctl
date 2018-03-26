@@ -1,0 +1,57 @@
+---
+# Tasks for testing role sysctl
+
+- name: test sysctl role
+  hosts: all
+  roles:
+    - role: amtega.sysctl
+
+  vars:
+    sysctl_options_list:
+  #  [service]:
+  #    option_name:
+  #    option_value:
+  #    option_status: [present | absent]
+      rp_filter:
+        option_name: net.ipv4.conf.all.rp_filter
+        option_value: 1
+        option_status: "absent"
+
+      accept_source_route:
+        option_name: "net.ipv4.conf.all.accept_source_route"
+        option_value: 0
+        option_status: "absent"
+
+      all_accept_redirects:
+        option_name: net.ipv4.conf.all.accept_redirects
+        option_value: 0ansible-playbook --skip-tags "role::docker_engine" main.yml
+        option_status: "present"
+
+      default_accept_redirects:
+        option_name: net.ipv4.conf.default.accept_redirects
+        option_value: 0
+        option_status: "present"
+
+  tasks:
+    - name: read sysctl values
+      shell: "sysctl -a"
+      changed_when: false
+      register: read_sysctl_result
+
+    - debug:
+        var: read_config_file_result.stdout
+
+    - name: verify options to be present
+      assert:
+        that:
+          - read_config_file_result.stdout | search ("{{ item.value.option_name }}")
+          ## - read_config_file_result.stdout | search ("{{ item.value.allowed_hosts_list }}")
+      with_dict: "{{ sysctl_options_list }}"
+
+    - name: verify options to be absent
+      assert:
+        that:
+          - read_config_file_result.stdout | search ("{{ item.value.option_name }}") == -1
+      with_dict: "{{ sysctl_options_list }}"
+  tags:
+    - idempotence

@@ -1,2 +1,12 @@
 ---
 # Role default lower priority variables
+
+# whether to execute "sysctl -p" after configuring or not
+sysctl_reload_config: false
+
+# structure of var sysctl_options_list for role execution
+#sysctl_options_list:
+#  [service]:
+#    option_name:
+#    option_value:
+#    option_status: [present | absent]

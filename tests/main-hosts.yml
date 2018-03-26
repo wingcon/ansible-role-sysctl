@@ -1,0 +1,10 @@
+---
+# Tasks for testing role
+
+- name: test sysctl role
+  hosts: remote_machines
+  roles:
+    - role: amtega.sysctl
+
+- import_playbook: test-tasks.yml
+  tags: idempotence
