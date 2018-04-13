@@ -1,7 +1,8 @@
 # role_name
 
 Configuration of sysctl system configuration.
-Uses and changes the sysctl.conf file.
+Uses and changes the sysctl.conf file by default.
+User can specify other conf files in role variables.
 
 ## Requirements
 
@@ -56,7 +57,7 @@ Test are based on docker containers. You can run the tests with the following co
 
 ```shell
 $ cd amtega.sysctl/tests
-$ ansible-playbook main.yml
+$ ansible-playbook main-docker.yml
 ```
 
 If you have docker engine configured you can avoid running dependant 'docker_engine' role (that usually requries root privileges) with the following commands:
