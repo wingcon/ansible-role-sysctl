@@ -1,2 +1,19 @@
 ---
 # Role default lower priority variables
+
+# sysctl file to apply changes
+# options
+#sysctl_file: /etc/sysctl.d/99-sysctl.conf
+#sysctl_file: /usr/lib/sysctl.d/00-system.conf
+#sysctl_file: /usr/lib/sysctl.d/50-default.conf
+sysctl_file: /etc/sysctl.conf
+
+# whether to execute "sysctl -p" after configuring or not
+sysctl_reload_config: true
+
+# structure of var sysctl_options_list for role execution
+#sysctl_options_list:
+#  [service]:
+#    option_name:
+#    option_value:
+#    option_status: [present | absent]

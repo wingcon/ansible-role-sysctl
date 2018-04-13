@@ -1,0 +1,56 @@
+---
+# Tasks for testing role sysctl
+- name: test sysctl role
+  hosts: all
+  vars:
+    sysctl_options_list:
+  #  [service]:
+  #    option_name:
+  #    option_value:
+  #    option_status: [present | absent]
+      rp_filter:
+        option_name: net.ipv4.conf.all.rp_filter
+        option_value: 1
+        option_status: "absent"
+
+      accept_source_route:
+        option_name: "net.ipv4.conf.all.accept_source_route"
+        option_value: 0
+        option_status: "absent"
+
+      all_accept_redirects:
+        option_name: net.ipv4.conf.all.accept_redirects
+        option_value: 0
+        option_status: "present"
+
+      default_accept_redirects:
+        option_name: net.ipv4.conf.default.accept_redirects
+        option_value: 0
+        option_status: "present"
+
+  roles:
+    - role: amtega.sysctl
+
+  tasks:
+    - name: read sysctl values
+      # shell: "/sbin/sysctl -a"
+      shell: "cat {{ sysctl_file }}"
+      changed_when: false
+      register: read_sysctl_result
+
+    - name: verify options to be present
+      assert:
+        that:
+          - read_sysctl_result.stdout is search ("{{ item.value.option_name }}")
+          - " '{{ item.value.option_status }}' == 'present' "
+      when: item.value.option_status == 'present'
+      with_dict: "{{ sysctl_options_list }}"
+
+    - name: verify options to be absent
+      assert:
+        that:
+          - read_sysctl_result.stdout is not search ("{{ item.value.option_name }}")
+      when: item.value.option_status == 'absent'
+      with_dict: "{{ sysctl_options_list }}"
+  tags:
+    - idempotence
