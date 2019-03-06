@@ -1,7 +1,0 @@
----
-# backup_sysctl.yml
-
-- name: backup config file
-  become: true
-  shell: "cp {{ sysctl_file }} {{ sysctl_file }}.`date +%Y%m%d%H%M%S`"
-  changed_when: false
