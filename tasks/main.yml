@@ -10,11 +10,11 @@
         state: "{{ sysctl_item.1.state | default(omit) }}"
         sysctl_file: "{{ sysctl_item.0.path | default(omit) }}"
         sysctl_set: "{{ sysctl_item.1.sysctl_set | default(omit) }}"
-        value: "{{ item.value.option_value }}"
+        value: "{{ sysctl_item.1.value }}"
       loop: "{{ sysctl_to_manage | subelements('options') }}"
       loop_control:
         loop_var: sysctl_item
-        label: "{{ sysctl_item.name }}"
+        label: "{{ sysctl_item.0.name }}"
   vars:
     sysctl_to_manage: >-
       {{ sysctl

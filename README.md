@@ -27,18 +27,18 @@ This is an example playbook:
     - amtega.sysctl
   vars:    
     sysctl:
-      name: main_sysctl
-      path: /etc/sysctl.conf
-      options:
-        - name: kernel.printk
-          value: 3 4 1 7#
-        - name: net.ipv6.conf.all.disable_ipv6
-          value: 1
-
-      /usr/lib/sysctl.d/50-default.conf:
-        - name: fs.protected_hardlinks
-          value: 1
-          state: present       
+      - name: main        
+        options:
+          - name: kernel.printk
+            value: 3 4 1 7#
+          - name: net.ipv6.conf.all.disable_ipv6
+            value: 1
+      - name: hardlinks
+        path: /etc/sysctl.d/50-hardlinks.conf
+        options:
+          - name: fs.protected_hardlinks
+            value: 1
+            state: present       
 ```
 
 ## Testing
