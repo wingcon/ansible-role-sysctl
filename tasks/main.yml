@@ -1,30 +1,24 @@
 ---
 # Role tasks
-- include: backup_sysctl.yml
 
-- name: configure sysctl.conf
-  become: true
-  sysctl:
-    name: "{{ item.value.option_name }}"
-    value: "{{ item.value.option_value }}"
-    state: "{{ item.value.option_status }}"
-    sysctl_file: "{{ sysctl_file }}"
-    reload: no
-    sysctl_set: yes
-  with_dict: "{{ sysctl_options_list }}"
-  when: sysctl_options_list is defined
-  register: status
-
-- name: remove line from sysctl file
-  lineinfile:
-    path: "{{ sysctl_file }}"
-    line: "{{ item.value.option_name }} = {{ item.value.option_value }}"
-    state: absent
-  when: item.value.option_status == 'absent'
-  with_dict: "{{ sysctl_options_list }}"
-
-- name: reload sysctl.conf
-  become: true
-  shell: "sysctl -p {{ sysctl_file }}"
-  changed_when: false
-  when: sysctl_reload_config and (status is changed)
+- block:
+    - name: Configure sysctl
+      sysctl:
+        ignoreerrors: "{{ sysctl_item.1.ignoreerrors | default(omit) }}"
+        name: "{{ sysctl_item.1.name }}"
+        reload: "{{ sysctl_item.1.reload | default(omit) }}"
+        state: "{{ sysctl_item.1.state | default(omit) }}"
+        sysctl_file: "{{ sysctl_item.0.path | default(omit) }}"
+        sysctl_set: "{{ sysctl_item.1.sysctl_set | default(omit) }}"
+        value: "{{ sysctl_item.1.value }}"
+      loop: "{{ sysctl_to_manage | subelements('options') }}"
+      loop_control:
+        loop_var: sysctl_item
+        label: "{{ sysctl_item.0.name }}"
+  vars:
+    sysctl_to_manage: >-
+      {{ sysctl
+         + ((sysctl_load_from_hostvars)
+            | ternary(sysctl_hostvars | default([]) | flatten, [])) }}
+  tags:
+    - role::sysctl

@@ -1,0 +1,81 @@
+---
+# Tasks for testing role
+
+- name: run idempotence test
+  hosts: localhost
+  roles:
+    - role: amtega.docker_presets
+      docker_presets_images_json_query: >-
+        [? starts_with(name, `centos-6`)
+           || starts_with(name, `centos-7`)
+           || starts_with(name, `debian-9`)
+           || starts_with(name, `fedora-27`)
+           || starts_with(name, `fedora-28`) ]
+
+    - role: amtega.docker_sandbox
+      docker_sandbox_state: started
+  tags:
+    - sandbox
+
+- name: prepare docker containers for test
+  hosts: docker_sandbox_containers
+  tasks:
+    - name: setup extra sysctl configs
+      set_fact:
+        sysctl_extra:
+          - name: hardlinks
+            path: /etc/sysctl.d/50-hardlinks.conf
+            options:
+              - name: fs.protected_hardlinks
+                value: 1
+                state: present
+                reload: no
+  tags:
+    - idempotence
+
+- name: test sysctl role
+  hosts: docker_sandbox_containers
+  roles:
+    - amtega.sysctl
+  vars:
+    sysctl_load_from_hostvars: yes
+    sysctl:
+      - name: main
+        options:
+          - name: kernel.printk
+            value: 3 4 1 7
+            reload: no
+          - name: net.ipv6.conf.all.disable_ipv6
+            value: 1
+            reload: no
+  tasks:
+    - name: read /etc/sysctl file
+      command: cat /etc/sysctl.conf
+      changed_when: false
+      register: read_main_sysctl_result
+
+    - name: read /etc/sysctl.d/50-hardlinks.conf file
+      command: cat /etc/sysctl.d/50-hardlinks.conf
+      changed_when: false
+      register: read_hardlinks_sysctl_result
+
+    - name: check that sysctl configs are present
+      assert:
+        that:
+          - >-
+            read_main_sysctl_result.stdout
+            is search("kernel.printk=3 4 1 7")
+          - >-
+            read_hardlinks_sysctl_result.stdout
+            is search("fs.protected_hardlinks=1")
+  tags:
+    - idempotence
+
+- name: cleanup docker docker sandbox
+  hosts: localhost
+  roles:
+    - role: amtega.docker_sandbox
+      docker_sandbox_state: absent
+  tags:
+    - cleanup
+    - sandbox

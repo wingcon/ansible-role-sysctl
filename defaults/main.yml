@@ -1,19 +1,45 @@
 ---
 # Role default lower priority variables
 
-# sysctl file to apply changes
-# options
-#sysctl_file: /etc/sysctl.d/99-sysctl.conf
-#sysctl_file: /usr/lib/sysctl.d/00-system.conf
-#sysctl_file: /usr/lib/sysctl.d/50-default.conf
-sysctl_file: /etc/sysctl.conf
+# List of dict  contining the sysctl files to create an their options. The
+# format of the dict is the following:
+#
+# {
+#  - name: <name>                   # For identification purposes
+#    path: <path>                   # Path to the sysctl config file (optional)
+#    options:                       # List of dict with options to apply
+#      - ignoreerrors: <boolean>
+#        name: <option name>
+#        reload: <boolean>
+#        state: <present or absent>
+#        sysctl_set: <boolean>
+#        value: <option value>
+# }
+#
+# The attributes in `options` list dicts have the same meaning that in  ansible
+# `sysctl` module
+#
+# Sample:
+#
+# sysctl:
+#   - name: main
+#     options:
+#       - name: kernel.printk
+#         value: 3 4 1 7#
+#       - name: net.ipv6.conf.all.disable_ipv6
+#         value: 1
+#   - name: hardlinks
+#     path: /etc/sysctl.d/50-hardlinks.conf
+#     options:
+#       - name: fs.protected_hardlinks
+#         value: 1
+#         state: present
 
-# whether to execute "sysctl -p" after configuring or not
-sysctl_reload_config: true
+sysctl: []
 
-# structure of var sysctl_options_list for role execution
-#sysctl_options_list:
-#  [service]:
-#    option_name:
-#    option_value:
-#    option_status: [present | absent]
+# Indicate `sysctl` must be loaded also from host variables. Any host variable
+# that begins with "sysctl_*" and contains the necessary attributes
+# will be loaded as an item to manage by the role. The variables must follow the
+# structure detailed before for `sysctl`
+
+sysctl_load_from_hostvars: no
