@@ -28,8 +28,6 @@
             options:
               - name: fs.protected_hardlinks
                 value: 1
-                state: present
-                reload: no
   tags:
     - idempotence
 
@@ -39,15 +37,16 @@
     - amtega.sysctl
   vars:
     sysctl_load_from_hostvars: yes
+    sysctl_options_defaults:
+      state: present
+      reload: no
     sysctl:
       - name: main
         options:
           - name: kernel.printk
             value: 3 4 1 7
-            reload: no
           - name: net.ipv6.conf.all.disable_ipv6
             value: 1
-            reload: no
   tasks:
     - name: read /etc/sysctl file
       command: cat /etc/sysctl.conf
