@@ -4,13 +4,30 @@
 - block:
     - name: Configure sysctl
       sysctl:
-        ignoreerrors: "{{ sysctl_item.1.ignoreerrors | default(omit) }}"
-        name: "{{ sysctl_item.1.name }}"
-        reload: "{{ sysctl_item.1.reload | default(omit) }}"
-        state: "{{ sysctl_item.1.state | default(omit) }}"
+        ignoreerrors: >-
+          {{ sysctl_item.1.ignoreerrors
+             | default(sysctl_options_defaults.ignoreerrors)
+             | default(omit) }}
+        name: >-
+          {{ sysctl_item.1.name
+             | default(sysctl_options_defaults.name)
+             | default(omit) }}
+        reload: >-
+          {{ sysctl_item.1.reload
+             | default(sysctl_options_defaults.reload)
+             | default(omit) }}
+        state: >-
+          {{ sysctl_item.1.state
+             | default(sysctl_options_defaults.state)
+             | default(omit) }}
         sysctl_file: "{{ sysctl_item.0.path | default(omit) }}"
-        sysctl_set: "{{ sysctl_item.1.sysctl_set | default(omit) }}"
-        value: "{{ sysctl_item.1.value }}"
+        sysctl_set: >-
+          {{ sysctl_item.1.sysctl_set
+             | default(sysctl_options_defaults.sysctl_set)
+             | default(omit) }}
+        value: >-
+          {{ sysctl_item.1.value
+             | default(sysctl_options_defaults.sysctl_set) }}
       loop: "{{ sysctl_to_manage | subelements('options') }}"
       loop_control:
         loop_var: sysctl_item

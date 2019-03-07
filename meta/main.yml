@@ -39,6 +39,7 @@ dependencies:
   - role: amtega.select_hostvars
     vars:
       select_hostvars_pattern: "^sysctl_.*"
+      select_hostvars_exclude_pattern: "^sysctl_options_defaults$"
       select_hostvars_fact_name: sysctl_hostvars
       select_hostvars_output_type: list
     when: sysctl_load_from_hostvars
