@@ -1,7 +1,7 @@
 ---
 # Tasks for testing role
 
-- name: run idempotence test
+- name: Run idempotence test
   hosts: localhost
   roles:
     - role: amtega.docker_presets
@@ -17,21 +17,21 @@
   tags:
     - sandbox
 
-- name: prepare docker containers for test
+- name: Prepare docker containers for test
   hosts: docker_sandbox_containers
   tasks:
-    - name: setup extra sysctl configs
+    - name: Setup extra sysctl configs
       set_fact:
         sysctl_extra:
-          - name: hardlinks
+          - name: Hardlinks
             path: /etc/sysctl.d/50-hardlinks.conf
             options:
-              - name: fs.protected_hardlinks
+              - name: Fs.protected_hardlinks
                 value: 1
   tags:
     - idempotence
 
-- name: test sysctl role
+- name: Test sysctl role
   hosts: docker_sandbox_containers
   roles:
     - amtega.sysctl
@@ -41,24 +41,24 @@
       state: present
       reload: no
     sysctl:
-      - name: main
+      - name: Main
         options:
-          - name: kernel.printk
+          - name: Kernel.printk
             value: 3 4 1 7
-          - name: net.ipv6.conf.all.disable_ipv6
+          - name: Net.ipv6.conf.all.disable_ipv6
             value: 1
   tasks:
-    - name: read /etc/sysctl file
+    - name: Read /etc/sysctl file
       command: cat /etc/sysctl.conf
       changed_when: false
       register: read_main_sysctl_result
 
-    - name: read /etc/sysctl.d/50-hardlinks.conf file
+    - name: Read /etc/sysctl.d/50-hardlinks.conf file
       command: cat /etc/sysctl.d/50-hardlinks.conf
       changed_when: false
       register: read_hardlinks_sysctl_result
 
-    - name: check that sysctl configs are present
+    - name: Check that sysctl configs are present
       assert:
         that:
           - >-
@@ -70,7 +70,7 @@
   tags:
     - idempotence
 
-- name: cleanup docker docker sandbox
+- name: Cleanup docker docker sandbox
   hosts: localhost
   roles:
     - role: amtega.docker_sandbox
