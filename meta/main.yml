@@ -7,19 +7,16 @@ galaxy_info:
   description: Manage sysctl configs
   company: AMTEGA - Xunta de Galicia
   license: GPLv3 or EUPL
-  min_ansible_version: 2.7
+  min_ansible_version: 2.9
   platforms:
-    - name: Debian
-      versions:
-        - stretch
     - name: EL
       versions:
         - 6
         - 7
     - name: Fedora
       versions:
-        - 27
-        - 28
+        - 29
+        - 30
   galaxy_tags:
     - system
     - sysctl
@@ -30,8 +27,7 @@ dependencies:
     vars:
       check_platform_distributions:
         centos: 6
-        debian: 9
-        fedora: 27
+        fedora: 29
         rhel: 6
     tags:
       - role::sysctl
