@@ -29,16 +29,24 @@ dependencies:
         centos: 6
         fedora: 29
         rhel: 6
-    tags:
-      - role::sysctl
+
+  - role: amtega.packages
+    vars:
+      packages_os:
+        all:
+          6:
+            procps: present
+          7:
+            procps-ng: present
+        fedora:
+          all:
+            procps-ng: present
 
   - role: amtega.select_hostvars
     vars:
       select_hostvars_query:
         pattern: "^sysctl_.*"
-        exclude_pattern: "^sysctl_options_defaults$"
+        exclude_pattern: "^sysctl_options_defaults|sysctl_load_from_hostvars$"
         fact_name: sysctl_hostvars
         output_type: list
-    when: sysctl_load_from_hostvars
-    tags:
-      - role::sysctl
+    when: sysctl_load_from_hostvars | bool
