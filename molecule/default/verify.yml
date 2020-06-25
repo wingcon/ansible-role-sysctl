@@ -1,0 +1,25 @@
+---
+
+- name: Verify
+  hosts: molecule_hosts
+  gather_facts: no
+  tasks:
+    - name: Read /etc/sysctl file
+      command: cat /etc/sysctl.conf
+      changed_when: false
+      register: read_main_sysctl_result
+
+    - name: Read /etc/sysctl.d/50-hardlinks.conf file
+      command: cat /etc/sysctl.d/50-hardlinks.conf
+      changed_when: false
+      register: read_hardlinks_sysctl_result
+
+    - name: Check that sysctl configs are present
+      assert:
+        that:
+          - >-
+            read_main_sysctl_result.stdout
+            is search("kernel.printk=3 4 1 7")
+          - >-
+            read_hardlinks_sysctl_result.stdout
+            is search("fs.protected_hardlinks=1")
