@@ -31,7 +31,7 @@
       loop: "{{ sysctl_to_manage | subelements('options') }}"
       loop_control:
         loop_var: sysctl_item
-        label: "{{ sysctl_item.0.name }}"
+        label: "{{ sysctl_item.0.name }} {{ sysctl_item.1.name | default('') }}"
   vars:
     sysctl_to_manage: >-
       {{ sysctl
