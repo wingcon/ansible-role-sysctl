@@ -41,8 +41,8 @@ sysctl: []
 # the `options` attribute of the items in `sysctl`variable.
 
 sysctl_options_defaults:
-  reload: yes
-  sysctl_set: yes
+  reload: true
+  sysctl_set: true
   state: present
 
 # Indicate `sysctl` must be loaded also from host variables. Any host variable
@@ -50,4 +50,4 @@ sysctl_options_defaults:
 # will be loaded as an item to manage by the role. The variables must follow the
 # structure detailed before for `sysctl`
 
-sysctl_load_from_hostvars: no
+sysctl_load_from_hostvars: false
