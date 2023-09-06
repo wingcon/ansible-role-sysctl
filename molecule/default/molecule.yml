@@ -61,10 +61,10 @@ provisioner:
     hosts:
       molecule_hosts:
         vars:
-          sysctl_load_from_hostvars: yes
+          sysctl_load_from_hostvars: true
           sysctl_options_defaults:
             state: present
-            reload: no
+            reload: false
           sysctl:
             - name: Main
               options:
